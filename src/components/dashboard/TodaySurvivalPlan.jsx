@@ -1,75 +1,102 @@
 import Card from "../ui/Card";
+import { Brain, Clock } from "lucide-react";
 
-export default function TodaySurvivalPlan(){
+import { useAI } from "../../context/AIContext";
 
-return(
+export default function TodaySurvivalPlan() {
+  const {
+    survivalPlan,
+    lifeScore,
+  } = useAI();
 
-<Card>
+  return (
+    <Card>
 
-<h2 className="text-3xl font-bold mb-8">
+      {/* Header */}
 
-🧠 Today's Survival Plan
+      <div className="flex items-center gap-3 mb-8">
 
-</h2>
+        <Brain className="text-green-400" />
 
-<div className="space-y-7">
+        <h2 className="text-3xl font-bold">
+          Today's Survival Plan
+        </h2>
 
-<div>
+      </div>
 
-<strong>08:00 AM</strong>
+      {/* Empty State */}
 
-<p className="text-slate-400">
+      {survivalPlan.length === 0 ? (
 
-Finish DTI Project
+        <div className="text-center py-10">
 
-</p>
+          <h3 className="text-2xl font-bold text-green-400">
+            Mission Complete
+          </h3>
 
-</div>
+          <p className="text-slate-400 mt-3">
+            Capsule AI found no critical tasks for today.
+          </p>
 
-<div>
+        </div>
 
-<strong>11:00 AM</strong>
+      ) : (
 
-<p className="text-slate-400">
+        <div className="space-y-7">
 
-AWS Assignment
+          {survivalPlan.map(
+            (plan, index) => (
+              <div
+                key={index}
+              >
 
-</p>
+                <div className="flex justify-between items-center">
 
-</div>
+                  <div className="flex items-center gap-3">
 
-<div>
+                    <Clock
+                      size={18}
+                      className="text-yellow-400"
+                    />
 
-<strong>03:00 PM</strong>
+                    <strong>
+                      {plan.time}
+                    </strong>
 
-<p className="text-slate-400">
+                  </div>
 
-DBMS Revision
+                  <span className="text-green-400 font-semibold">
+                    {plan.success}%
+                  </span>
 
-</p>
+                </div>
 
-</div>
+                <p className="text-slate-400 mt-2 ml-8">
+                  {plan.task}
+                </p>
 
-<div className="border-t border-slate-700 pt-5">
+              </div>
+            )
+          )}
 
-<p>
+          {/* Footer */}
 
-Estimated Success Rate
+          <div className="border-t border-slate-700 pt-5">
 
-</p>
+            <p className="text-slate-400">
+              Estimated Success Rate
+            </p>
 
-<h1 className="text-4xl text-green-400 font-bold">
+            <h1 className="text-4xl text-green-400 font-bold mt-2">
+              {lifeScore}%
+            </h1>
 
-92%
+          </div>
 
-</h1>
+        </div>
 
-</div>
+      )}
 
-</div>
-
-</Card>
-
-)
-
+    </Card>
+  );
 }

@@ -1,93 +1,129 @@
 import Card from "../ui/Card";
+import { CalendarClock } from "lucide-react";
 
-const deadlines=[
+import { useAI } from "../../context/AIContext";
 
-{
+export default function UpcomingDeadlines() {
+  const { upcoming } = useAI();
 
-task:"DTI Project",
+  const getColor = (risk) => {
+    if (risk >= 80)
+      return "bg-red-500";
 
-day:"Tomorrow",
+    if (risk >= 60)
+      return "bg-orange-500";
 
-color:"bg-red-500"
+    if (risk >= 40)
+      return "bg-yellow-500";
 
-},
+    return "bg-green-500";
+  };
 
-{
+  const getDayText = (days) => {
+    if (days <= 0)
+      return "Today";
 
-task:"AWS Assignment",
+    if (days === 1)
+      return "Tomorrow";
 
-day:"2 Days",
+    return `${days} Days`;
+  };
 
-color:"bg-yellow-500"
+  return (
+    <Card>
 
-},
+      {/* Header */}
 
-{
+      <div className="flex items-center gap-3 mb-6">
 
-task:"DBMS Exam",
+        <CalendarClock
+          className="text-cyan-400"
+          size={24}
+        />
 
-day:"4 Days",
+        <h2 className="text-2xl font-bold">
+          Priority Deadlines
+        </h2>
 
-color:"bg-green-500"
+      </div>
 
-}
+      {/* Empty State */}
 
-];
+      {upcoming.length === 0 ? (
 
-export default function UpcomingDeadlines(){
+        <div className="py-8 text-center">
 
-return(
+          <h3 className="text-green-400 text-xl font-bold">
+            No Pending Deadlines
+          </h3>
 
-<Card>
+          <p className="text-slate-400 mt-2">
+            Capsule AI detected no upcoming tasks.
+          </p>
 
-<h2 className="text-2xl font-bold mb-6">
-    
-Priority Deadlines
+        </div>
 
-</h2>
+      ) : (
 
-<div className="space-y-5">
+        <div className="space-y-5">
 
-{
+          {upcoming.map(
+            (task, index) => (
+              <div
+                key={
+                  task.id ||
+                  index
+                }
+                className="flex justify-between items-center"
+              >
 
-deadlines.map((item,index)=>(
+                <div className="flex items-center gap-4">
 
-<div
+                  <div
+                    className={`w-3 h-3 rounded-full ${getColor(
+                      task.risk
+                    )}`}
+                  />
 
-key={index}
+                  <div>
 
-className="flex justify-between items-center"
+                    <p className="font-semibold">
+                      {task.title}
+                    </p>
 
->
+                    <p className="text-sm text-slate-500">
+                      Risk:{" "}
+                      {task.risk}%
+                    </p>
 
-<div className="flex items-center gap-3">
+                  </div>
 
-<div className={`w-3 h-3 rounded-full ${item.color}`}></div>
+                </div>
 
-<p>
+                <div className="text-right">
 
-{item.task}
+                  <p className="text-slate-400">
+                    {getDayText(
+                      task.daysLeft
+                    )}
+                  </p>
 
-</p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    {
+                      task.priority
+                    }
+                  </p>
 
-</div>
+                </div>
 
-<span className="text-slate-400">
+              </div>
+            )
+          )}
 
-{item.day}
+        </div>
 
-</span>
+      )}
 
-</div>
-
-))
-
-}
-
-</div>
-
-</Card>
-
-)
-
+    </Card>
+  );
 }

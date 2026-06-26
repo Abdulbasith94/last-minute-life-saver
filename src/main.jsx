@@ -9,6 +9,8 @@ import "./index.css";
 
 import { TaskProvider } from "./context/TaskContext";
 
+import { AIProvider } from "./context/AIContext";
+
 ReactDOM.createRoot(document.getElementById("root")).render(
 
   <React.StrictMode>
@@ -17,7 +19,11 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 
       <TaskProvider>
 
-        <App />
+        <AIProvider>
+
+          <App/>
+
+        </AIProvider>
 
       </TaskProvider>
 

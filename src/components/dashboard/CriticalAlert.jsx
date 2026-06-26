@@ -1,108 +1,180 @@
 import Card from "../ui/Card";
 import { AlertTriangle } from "lucide-react";
 
-export default function CriticalAlert(){
+import { useAI } from "../../context/AIContext";
 
-return(
+export default function CriticalAlert() {
+  const { criticalAlert } = useAI();
 
-<Card className="border border-red-500/30">
+  if (!criticalAlert.exists) {
+    return (
+      <Card className="border border-green-500/30">
 
-<div className="flex justify-between items-start">
+        <div className="flex items-center gap-3">
 
-<div>
+          <AlertTriangle className="text-green-400" />
 
-<div className="flex items-center gap-3">
+          <h2 className="text-2xl font-bold">
+            Capsule AI Alert
+          </h2>
 
-<AlertTriangle className="text-red-400"/>
+        </div>
 
-<h2 className="text-2xl font-bold">
+        <div className="mt-8">
 
-Critical AI Alert
+          <h1 className="text-4xl font-bold text-green-400">
+            SAFE
+          </h1>
 
-</h2>
+          <p className="text-slate-400 mt-3">
+            Capsule AI predicts no critical deadline
+            failures at this time.
+          </p>
 
-</div>
+        </div>
 
-<p className="text-slate-400 mt-2">
+      </Card>
+    );
+  }
 
-AI predicts you may miss an important deadline.
+  const task = criticalAlert.task;
 
-</p>
+  const getRemainingHours = () => {
+    const diff =
+      new Date(task.deadline + "T23:59:59") -
+      new Date();
 
-</div>
+    const hours = Math.max(
+      0,
+      Math.floor(diff / (1000 * 60 * 60))
+    );
 
-<div className="text-right">
+    return hours;
+  };
 
-<p className="text-red-400 text-sm">
+  return (
+    <Card className="border border-red-500/30">
 
-Risk
+      {/* Header */}
 
-</p>
+      <div className="flex justify-between items-start">
 
-<h1 className="text-5xl font-bold text-red-400">
+        <div>
 
-85%
+          <div className="flex items-center gap-3">
 
-</h1>
+            <AlertTriangle className="text-red-400" />
 
-</div>
+            <h2 className="text-2xl font-bold">
+              Critical AI Alert
+            </h2>
 
-</div>
+          </div>
 
-<div className="mt-8 space-y-4">
+          <p className="text-slate-400 mt-2">
+            AI predicts you may miss an important
+            deadline.
+          </p>
 
-<div className="flex justify-between">
+        </div>
 
-<span>Task</span>
+        <div className="text-right">
 
-<strong>DTI Project</strong>
+          <p className="text-red-400 text-sm">
+            Risk
+          </p>
 
-</div>
+          <h1 className="text-5xl font-bold text-red-400">
+            {criticalAlert.risk}%
+          </h1>
 
-<div className="flex justify-between">
+        </div>
 
-<span>Deadline</span>
+      </div>
 
-<strong>Tomorrow</strong>
+      {/* Task Details */}
 
-</div>
+      <div className="mt-8 space-y-4">
 
-<div className="flex justify-between">
+        <div className="flex justify-between">
 
-<span>Time Remaining</span>
+          <span>Task</span>
 
-<strong>12 Hours</strong>
+          <strong>
+            {task.title}
+          </strong>
 
-</div>
+        </div>
 
-<div className="flex justify-between">
+        <div className="flex justify-between">
 
-<span>Estimated Work</span>
+          <span>Deadline</span>
 
-<strong>5 Hours</strong>
+          <strong>
+            {task.deadline}
+          </strong>
 
-</div>
+        </div>
 
-</div>
+        <div className="flex justify-between">
 
-<div className="mt-8 rounded-xl bg-red-500/10 p-5 border border-red-500/20">
+          <span>
+            Time Remaining
+          </span>
 
-<h3 className="font-bold text-red-400">
+          <strong>
+            {getRemainingHours()} Hours
+          </strong>
 
-AI Recommendation
+        </div>
 
-</h3>
+        <div className="flex justify-between">
 
-<p className="mt-2 text-slate-300">
+          <span>
+            Estimated Work
+          </span>
 
-Start your DTI Project within the next 2 hours to maximize your chance of finishing before the deadline.
+          <strong>
+            {task.estimatedHours} Hours
+          </strong>
 
-</p>
+        </div>
 
-</div>
+      </div>
 
-</Card>
+      {/* AI Recommendation */}
 
-)
+      <div className="mt-8 rounded-xl bg-red-500/10 p-5 border border-red-500/20">
 
+        <h3 className="font-bold text-red-400">
+          AI Recommendation
+        </h3>
+
+        <p className="mt-2 text-slate-300">
+          {
+            criticalAlert.recommendation
+          }
+        </p>
+
+      </div>
+
+      {/* Success Prediction */}
+
+      <div className="mt-6 flex justify-between items-center">
+
+        <span className="text-slate-400">
+          Success Probability
+        </span>
+
+        <span className="text-green-400 font-bold text-xl">
+          {
+            criticalAlert.estimatedSuccess
+          }
+          %
+        </span>
+
+      </div>
+
+    </Card>
+  );
 }

@@ -2,144 +2,164 @@ import Card from "../ui/Card";
 import { motion } from "framer-motion";
 import { ShieldAlert } from "lucide-react";
 
+import { useAI } from "../../context/AIContext";
+
 export default function RiskMeter() {
+  const { averageRisk } = useAI();
 
-    const risk = 85;
+  const radius = 70;
+  const stroke = 10;
 
-    const radius = 70;
-    const stroke = 10;
+  const circumference =
+    2 * Math.PI * radius;
 
-    const circumference = 2 * Math.PI * radius;
+  const offset =
+    circumference -
+    (averageRisk / 100) *
+      circumference;
 
-    const offset =
-        circumference -
-        (risk / 100) * circumference;
+  function getRiskLevel() {
+    if (averageRisk >= 80)
+      return {
+        text: "Critical",
+        color: "#EF4444",
+      };
 
-    return (
+    if (averageRisk >= 60)
+      return {
+        text: "High",
+        color: "#F97316",
+      };
 
-        <Card className="flex flex-col items-center justify-center h-full">
+    if (averageRisk >= 40)
+      return {
+        text: "Moderate",
+        color: "#EAB308",
+      };
 
-            <div className="flex items-center gap-3 mb-8">
+    return {
+      text: "Low",
+      color: "#22C55E",
+    };
+  }
 
-                <ShieldAlert
-                    className="text-red-400"
-                    size={26}
-                />
+  const risk =
+    getRiskLevel();
 
-                <h2 className="text-2xl font-bold">
+  return (
+    <Card className="flex flex-col items-center justify-center h-full">
 
-                    AI Risk Meter
+      <div className="flex items-center gap-3 mb-8">
 
-                </h2>
+        <ShieldAlert
+          size={26}
+          style={{
+            color:
+              risk.color,
+          }}
+        />
 
-            </div>
+        <h2 className="text-2xl font-bold">
+          AI Risk Meter
+        </h2>
 
-            <div className="relative">
+      </div>
 
-                <svg
-                    width="180"
-                    height="180"
-                >
+      <div className="relative">
 
-                    <circle
+        <svg
+          width="180"
+          height="180"
+        >
+          <circle
+            cx="90"
+            cy="90"
+            r={radius}
+            stroke="#1E293B"
+            strokeWidth={stroke}
+            fill="none"
+          />
 
-                        cx="90"
+          <motion.circle
+            cx="90"
+            cy="90"
+            r={radius}
+            stroke={
+              risk.color
+            }
+            strokeWidth={
+              stroke
+            }
+            fill="none"
+            strokeLinecap="round"
+            strokeDasharray={
+              circumference
+            }
+            initial={{
+              strokeDashoffset:
+                circumference,
+            }}
+            animate={{
+              strokeDashoffset:
+                offset,
+            }}
+            transition={{
+              duration:
+                1.8,
+            }}
+            transform="rotate(-90 90 90)"
+          />
+        </svg>
 
-                        cy="90"
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
 
-                        r={radius}
+          <h1
+            className="text-5xl font-bold"
+            style={{
+              color:
+                risk.color,
+            }}
+          >
+            {averageRisk}%
+          </h1>
 
-                        stroke="#1E293B"
+          <p className="text-slate-400 mt-2">
+            {risk.text}
+          </p>
 
-                        strokeWidth={stroke}
+        </div>
 
-                        fill="none"
+      </div>
 
-                    />
+      <div className="mt-8 w-full">
 
-                    <motion.circle
+        <div className="flex justify-between">
 
-                        cx="90"
+          <span className="text-slate-400">
+            Deadline Risk
+          </span>
 
-                        cy="90"
+          <span
+            style={{
+              color:
+                risk.color,
+            }}
+          >
+            {risk.text}
+          </span>
 
-                        r={radius}
+        </div>
 
-                        stroke="#EF4444"
+        <p className="text-slate-500 text-sm mt-4 leading-7">
 
-                        strokeWidth={stroke}
+          Capsule AI analyzed all pending
+          tasks and calculated the overall
+          probability of deadline failure.
 
-                        fill="none"
+        </p>
 
-                        strokeLinecap="round"
+      </div>
 
-                        strokeDasharray={circumference}
-
-                        initial={{
-                            strokeDashoffset: circumference,
-                        }}
-
-                        animate={{
-                            strokeDashoffset: offset,
-                        }}
-
-                        transition={{
-                            duration: 1.8,
-                        }}
-
-                        transform="rotate(-90 90 90)"
-
-                    />
-
-                </svg>
-
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-
-                    <h1 className="text-5xl font-bold text-red-400">
-
-                        {risk}%
-
-                    </h1>
-
-                    <p className="text-slate-400 mt-2">
-
-                        High Risk
-
-                    </p>
-
-                </div>
-
-            </div>
-
-            <div className="mt-8 w-full">
-
-                <div className="flex justify-between">
-
-                    <span className="text-slate-400">
-
-                        Deadline Risk
-
-                    </span>
-
-                    <span className="text-red-400">
-
-                        Critical
-
-                    </span>
-
-                </div>
-
-                <p className="text-slate-500 text-sm mt-4 leading-7">
-
-                    AI estimates an 85% probability of missing your
-                    next deadline if no action is taken today.
-
-                </p>
-
-            </div>
-
-        </Card>
-
-    );
-
+    </Card>
+  );
 }
