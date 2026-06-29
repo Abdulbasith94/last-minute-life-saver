@@ -11,6 +11,8 @@ import { TaskProvider } from "./context/TaskContext";
 
 import { AIProvider } from "./context/AIContext";
 
+import { ChatProvider, } from "./context/ChatContext";
+
 ReactDOM.createRoot(document.getElementById("root")).render(
 
   <React.StrictMode>
@@ -21,7 +23,11 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 
         <AIProvider>
 
-          <App/>
+          <ChatProvider>
+
+            <App/>
+
+          </ChatProvider>
 
         </AIProvider>
 
