@@ -1,14 +1,33 @@
+import { useState } from "react";
+
 import {
   Bell,
   CalendarDays,
   Target,
   Sparkles,
+  AlertTriangle,
 } from "lucide-react";
 
 import { motion } from "framer-motion";
 
+import {
+  useNotifications,
+} from "../../context/NotificationContext";
+
 export default function Header() {
-  const hour = new Date().getHours();
+
+  const {
+    unread,
+    alerts,
+  } = useNotifications();
+
+  const [
+    showNotifications,
+    setShowNotifications,
+  ] = useState(false);
+
+  const hour =
+    new Date().getHours();
 
   const greeting =
     hour < 12
@@ -17,32 +36,57 @@ export default function Header() {
       ? "Good Afternoon"
       : "Good Evening";
 
-  const today = new Date().toLocaleDateString("en-US", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+  const today =
+    new Date().toLocaleDateString(
+      "en-US",
+      {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      }
+    );
 
   return (
+
     <motion.div
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45 }}
-      className="mb-10"
+
+      initial={{
+        opacity: 0,
+        y: -20,
+      }}
+
+      animate={{
+        opacity: 1,
+        y: 0,
+      }}
+
+      transition={{
+        duration: 0.45,
+      }}
+
+      className="mb-10 relative"
+
     >
+
       {/* Top */}
 
       <div className="flex justify-between items-start">
 
         <div>
+
           <h1 className="text-4xl xl:text-5xl font-bold leading-tight">
+
             {greeting}, Abdul 👋
+
           </h1>
 
           <p className="text-slate-400 mt-3 text-lg max-w-3xl">
+
             Welcome back. Capsule AI analyzed your schedule and prepared today's productivity mission.
+
           </p>
+
         </div>
 
         {/* Right Side */}
@@ -52,6 +96,13 @@ export default function Header() {
           {/* Notification */}
 
           <button
+
+            onClick={() =>
+              setShowNotifications(
+                !showNotifications
+              )
+            }
+
             className="
               glass
               w-14
@@ -64,42 +115,63 @@ export default function Header() {
               hover:scale-105
               transition
             "
+
           >
+
             <Bell />
 
-            <span
-              className="
-                absolute
-                top-2
-                right-2
-                w-3
-                h-3
-                rounded-full
-                bg-red-500
-              "
-            />
+            {unread > 0 && (
+
+              <span
+                className="
+                  absolute
+                  -top-1
+                  -right-1
+                  w-6
+                  h-6
+                  rounded-full
+                  bg-red-500
+                  text-white
+                  text-xs
+                  flex
+                  items-center
+                  justify-center
+                  font-bold
+                "
+              >
+
+                {unread}
+
+              </span>
+
+            )}
+
           </button>
 
           {/* Date */}
 
           <div
             className="
-            glass
-            h-14
-            min-w-[220px]
-            rounded-2xl
-            px-7
-            flex
-            items-center
-            justify-center
-            gap-3
+              glass
+              h-14
+              min-w-[220px]
+              rounded-2xl
+              px-7
+              flex
+              items-center
+              justify-center
+              gap-3
             "
           >
+
             <CalendarDays size={18} />
 
             <span className="text-sm font-medium">
+
               {today}
+
             </span>
+
           </div>
 
           {/* Profile */}
@@ -137,6 +209,109 @@ export default function Header() {
 
       </div>
 
+      {/* Notification Popup */}
+
+      {showNotifications && (
+
+        <div
+          className="
+            absolute
+            top-20
+            right-0
+            w-[420px]
+            bg-slate-900
+            border
+            border-slate-700
+            rounded-3xl
+            p-6
+            z-50
+            shadow-2xl
+          "
+        >
+
+          <div className="flex justify-between items-center">
+
+            <h2 className="text-xl font-bold">
+
+              Notifications
+
+            </h2>
+
+            <span className="text-red-400">
+
+              {unread} unread
+
+            </span>
+
+          </div>
+
+          <div className="mt-5 space-y-4">
+
+            {alerts.length === 0 && (
+
+              <p className="text-slate-400">
+
+                No notifications
+
+              </p>
+
+            )}
+
+            {alerts.map(
+              alert => (
+
+                <div
+                  key={alert.id}
+                  className="
+                    bg-slate-800
+                    rounded-xl
+                    p-4
+                  "
+                >
+
+                  <div className="flex gap-3">
+
+                    <AlertTriangle
+                      className="
+                        text-red-400
+                      "
+                    />
+
+                    <div>
+
+                      <h3 className="font-semibold">
+
+                        {alert.title}
+
+                      </h3>
+
+                      <p className="text-slate-400 text-sm mt-2">
+
+                        {alert.task}
+
+                      </p>
+
+                      <p className="text-slate-500 text-xs mt-2">
+
+                        {alert.message}
+
+                      </p>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              )
+            )}
+
+          </div>
+
+        </div>
+
+      )}
+
       {/* Today's Focus */}
 
       <div
@@ -150,26 +325,37 @@ export default function Header() {
           items-center
         "
       >
+
         <div>
 
           <div className="flex items-center gap-3">
+
             <Target className="text-red-400" />
 
             <h2 className="text-3xl font-bold">
+
               Today's Focus
+
             </h2>
+
           </div>
 
           <p className="text-slate-400 mt-4">
+
             Highest Priority
+
           </p>
 
           <h3 className="text-2xl font-bold mt-2">
+
             Finish DTI Project
+
           </h3>
 
           <p className="text-green-400 mt-4">
+
             Estimated Success • 92%
+
           </p>
 
         </div>
@@ -177,23 +363,33 @@ export default function Header() {
         <div className="text-right">
 
           <div className="flex items-center gap-2 justify-end">
+
             <Sparkles className="text-yellow-400" />
 
             <span className="font-semibold">
+
               Capsule Recommendation
+
             </span>
+
           </div>
 
           <h2 className="text-4xl font-bold mt-5 text-red-400">
+
             START NOW
+
           </h2>
 
           <p className="text-slate-400 mt-3">
+
             Begin within the next
+
           </p>
 
           <h3 className="text-2xl font-bold mt-2">
+
             2 Hours
+
           </h3>
 
         </div>
@@ -201,5 +397,7 @@ export default function Header() {
       </div>
 
     </motion.div>
+
   );
+
 }

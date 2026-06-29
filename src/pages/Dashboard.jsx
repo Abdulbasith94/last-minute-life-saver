@@ -22,6 +22,16 @@ import QuickActions from "../components/dashboard/QuickActions";
 
 import HeroBrief from "../components/dashboard/HeroBrief";
 
+import NotificationCenter from "../components/dashboard/NotificationCenter";
+
+import SmartReminders from "../components/dashboard/SmartReminders";
+
+import PredictionEngine from "../components/dashboard/PredictionEngine";
+
+import SuccessDashboard from "../components/dashboard/SuccessDashboard";
+
+import RescueMode from "../components/dashboard/RescueMode";
+
 import {
 
 Heart,
@@ -88,6 +98,11 @@ icon={<CircleCheck size={26}/>}
 <div className="col-span-2">
 
 <CriticalAlert/>
+<NotificationCenter />
+<SmartReminders />
+<PredictionEngine />
+<SuccessDashboard />
+<RescueMode />
 
 </div>
 

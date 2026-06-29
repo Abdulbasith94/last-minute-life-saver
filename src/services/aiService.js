@@ -1,261 +1,117 @@
-import {
-  calculateTaskRisk,
-  calculateLifeScore,
-  getCriticalTasks,
-  getUpcomingTasks,
-  generateSurvivalPlan,
-  getAIRecommendation,
-} from "../utils/riskCalculator";
+// ============================================
+// CAPSULE AI SERVICE
+// Last Minute Life Saver
+// ============================================
 
 const aiService = {
-  analyzeTasks(tasks = []) {
-    const analyzedTasks = tasks.map((task) => ({
-      ...task,
-      risk: calculateTaskRisk(task),
-    }));
 
-    return analyzedTasks;
-  },
+  // =================================
+  // DASHBOARD ANALYTICS
+  // =================================
 
-  getLifeScore(tasks = []) {
-    return calculateLifeScore(tasks);
-  },
-
-  getRiskLevel(score) {
-    if (score >= 80)
-      return {
-        label: "Critical",
-        color: "red",
-      };
-
-    if (score >= 60)
-      return {
-        label: "High",
-        color: "orange",
-      };
-
-    if (score >= 40)
-      return {
-        label: "Moderate",
-        color: "yellow",
-      };
-
-    return {
-      label: "Safe",
-      color: "green",
-    };
-  },
-
-  getCriticalAlert(tasks = []) {
-    const critical =
-      getCriticalTasks(tasks);
-
-    if (
-      critical.length === 0
-    ) {
-      return {
-        exists: false,
-        risk: 0,
-        task: null,
-        recommendation:
-          "No critical tasks detected.",
-      };
-    }
-
-    const task =
-      critical[0];
-
-    return {
-      exists: true,
-
-      task,
-
-      risk:
-        task.risk,
-
-      recommendation: `Start "${task.title}" within the next 2 hours to maximize completion probability.`,
-
-      estimatedSuccess:
-        Math.max(
-          50,
-          100 -
-            task.risk
-        ),
-    };
-  },
-
-  getUpcomingDeadlines(
-    tasks = []
-  ) {
-    return getUpcomingTasks(
-      tasks
-    ).slice(0, 5);
-  },
-
-  getSurvivalPlan(
-    tasks = []
-  ) {
-    return generateSurvivalPlan(
-      tasks
-    );
-  },
-
-  getInsights(
-    tasks = []
-  ) {
-    const total =
-      tasks.length;
+  getDashboardAnalytics(tasks = []) {
 
     const completed =
       tasks.filter(
-        (t) =>
-          t.completed
-      ).length;
+        t => t.completed
+      );
 
     const pending =
-      total -
-      completed;
-
-    const highRisk =
-      getCriticalTasks(
-        tasks
-      ).length;
-
-    const completion =
-      total === 0
-        ? 100
-        : Math.round(
-            (completed /
-              total) *
-              100
-          );
-
-    const insights =
-      [];
-
-    if (
-      completion >= 70
-    ) {
-      insights.push(
-        "📈 Your productivity level is above average."
-      );
-    }
-
-    if (
-      highRisk > 0
-    ) {
-      insights.push(
-        `⚠ ${highRisk} critical task(s) require immediate attention.`
-      );
-    }
-
-    if (
-      pending > 3
-    ) {
-      insights.push(
-        "💡 Avoid multitasking and focus on one task at a time."
-      );
-    }
-
-    insights.push(
-      "🎯 Morning hours are predicted to be your most productive period."
-    );
-
-    return insights;
-  },
-
-  getDashboardAnalytics(
-    tasks = []
-  ) {
-    const analyzed =
-      this.analyzeTasks(
-        tasks
+      tasks.filter(
+        t => !t.completed
       );
 
     const critical =
-      getCriticalTasks(
-        analyzed
+      pending.filter(
+        t =>
+          (t.risk || 0) >= 70
       );
 
-    const recommendation =
-      getAIRecommendation(
-        analyzed
+    const lifeScore =
+      Math.max(
+        0,
+        100 -
+          critical.length * 10
       );
 
     const averageRisk =
-      analyzed.length
+      pending.length
         ? Math.round(
-            analyzed.reduce(
+            pending.reduce(
               (
-                sum,
-                task
+                a,
+                b
               ) =>
-                sum +
-                task.risk,
+                a +
+                (b.risk ||
+                  0),
               0
             ) /
-              analyzed.length
+              pending.length
           )
         : 0;
 
     return {
+
       totalTasks:
-        analyzed.length,
+        tasks.length,
 
       completedTasks:
-        analyzed.filter(
-          (
-            task
-          ) =>
-            task.completed
-        ).length,
+        completed.length,
 
       pendingTasks:
-        analyzed.filter(
-          (
-            task
-          ) =>
-            !task.completed
-        ).length,
-
-      averageRisk,
-
-      lifeScore:
-        this.getLifeScore(
-          analyzed
-        ),
+        pending.length,
 
       criticalTasks:
         critical,
 
+      lifeScore,
+
+      averageRisk,
+
       upcoming:
-        this.getUpcomingDeadlines(
-          analyzed
+        pending.slice(
+          0,
+          3
         ),
 
       survivalPlan:
-        this.getSurvivalPlan(
-          analyzed
+        pending.slice(
+          0,
+          3
         ),
 
-      insights:
-        this.getInsights(
-          analyzed
-        ),
+      recommendation:
+        averageRisk >=
+        70
+          ? "START NOW"
+          : "Continue current pace",
 
-      recommendation,
+      insights: [
+        "Your productivity increases during morning hours.",
+        "Avoid multitasking.",
+        "Focus on high risk tasks.",
+      ],
+
     };
+
   },
 
+  // =================================
+  // SYSTEM HEALTH
+  // =================================
+
   getSystemHealth() {
+
     return {
-      predictionEngine:
+
+      prediction:
         "Online",
 
-      taskAnalyzer:
+      analyzer:
         "Monitoring",
 
-      planningEngine:
+      planner:
         "Active",
 
       intelligence:
@@ -263,8 +119,230 @@ const aiService = {
 
       health:
         98.7,
+
     };
+
   },
+
+  // =================================
+  // CRITICAL ALERT
+  // =================================
+
+  getCriticalAlert(
+    tasks = []
+  ) {
+
+    const critical =
+      tasks
+        .filter(
+          t =>
+            !t.completed
+        )
+        .sort(
+          (
+            a,
+            b
+          ) =>
+            (b.risk ||
+              0) -
+            (a.risk ||
+              0)
+        )[0];
+
+    if (
+      !critical
+    ) {
+
+      return {
+
+        risk: 0,
+
+        task:
+          "None",
+
+        recommendation:
+          "Safe",
+
+      };
+
+    }
+
+    return {
+
+      risk:
+        critical.risk ||
+        0,
+
+      task:
+        critical.title,
+
+      recommendation:
+        "START NOW",
+
+    };
+
+  },
+
+  // =================================
+  // NOTIFICATION ENGINE
+  // =================================
+
+  generateAlerts(
+    tasks = []
+  ) {
+
+    const alerts =
+      [];
+
+    const pending =
+      tasks.filter(
+        task =>
+          !task.completed
+      );
+
+    pending.forEach(
+      task => {
+
+        const deadline =
+          new Date(
+            task.deadline
+          );
+
+        const now =
+          new Date();
+
+        const hours =
+          Math.floor(
+            (
+              deadline -
+              now
+            ) /
+            (
+              1000 *
+              60 *
+              60
+            )
+          );
+
+        if (
+          hours <= 12
+        ) {
+
+          alerts.push({
+
+            id:
+              Date.now() +
+              Math.random(),
+
+            type:
+              "critical",
+
+            title:
+              "Critical Deadline",
+
+            task:
+              task.title,
+
+            message:
+              `Only ${hours} hours remaining.`,
+
+            risk:
+              95,
+
+          });
+
+        }
+
+        else if (
+          hours <= 24
+        ) {
+
+          alerts.push({
+
+            id:
+              Date.now() +
+              Math.random(),
+
+            type:
+              "warning",
+
+            title:
+              "High Priority Alert",
+
+            task:
+              task.title,
+
+            message:
+              "Deadline approaching.",
+
+            risk:
+              75,
+
+          });
+
+        }
+
+      }
+    );
+
+    return alerts;
+
+  },
+
+  // =================================
+  // SUCCESS
+  // =================================
+
+  calculateSuccessProbability(
+    tasks
+  ) {
+
+    const completed =
+      tasks.filter(
+        t =>
+          t.completed
+      ).length;
+
+    const total =
+      tasks.length;
+
+    if (
+      total === 0
+    )
+      return 100;
+
+    return Math.round(
+      (
+        completed /
+        total
+      ) *
+        100
+    );
+
+  },
+
+  // =================================
+  // MOTIVATION
+  // =================================
+
+  generateMotivation(
+    score
+  ) {
+
+    if (
+      score >= 80
+    )
+      return "Excellent progress.";
+
+    if (
+      score >= 50
+    )
+      return "Keep moving.";
+
+    return "Start immediately.";
+
+  },
+
 };
 
 export default aiService;
