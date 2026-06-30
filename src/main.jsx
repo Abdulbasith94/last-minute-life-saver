@@ -7,37 +7,27 @@ import App from "./App";
 
 import "./index.css";
 
-import { TaskProvider }
-from "./context/TaskContext";
+import { TaskProvider } from "./context/TaskContext";
+import { AIProvider } from "./context/AIContext";
+import { ChatProvider } from "./context/ChatContext";
+import { NotificationProvider } from "./context/NotificationContext";
+import { AnalyticsProvider } from "./context/AnalyticsContext";
 
-import { AIProvider }
-from "./context/AIContext";
+ReactDOM.createRoot(
+  document.getElementById("root")
+).render(
 
-import { ChatProvider }
-from "./context/ChatContext";
+  <React.StrictMode>
 
-import {
-  NotificationProvider,
-}
-from "./context/NotificationContext";
+    <BrowserRouter>
 
-ReactDOM
-  .createRoot(
-    document.getElementById(
-      "root"
-    )
-  )
-  .render(
+      <TaskProvider>
 
-    <React.StrictMode>
-
-      <BrowserRouter>
-
-        <TaskProvider>
+        <AIProvider>
 
           <NotificationProvider>
 
-            <AIProvider>
+            <AnalyticsProvider>
 
               <ChatProvider>
 
@@ -45,14 +35,16 @@ ReactDOM
 
               </ChatProvider>
 
-            </AIProvider>
+            </AnalyticsProvider>
 
           </NotificationProvider>
 
-        </TaskProvider>
+        </AIProvider>
 
-      </BrowserRouter>
+      </TaskProvider>
 
-    </React.StrictMode>
+    </BrowserRouter>
 
-  );
+  </React.StrictMode>
+
+);
