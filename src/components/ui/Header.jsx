@@ -6,9 +6,13 @@ import {
   Target,
   Sparkles,
   AlertTriangle,
+  Settings,
 } from "lucide-react";
 
 import { motion } from "framer-motion";
+
+import { useNavigate }
+from "react-router-dom";
 
 import {
   useNotifications,
@@ -16,15 +20,20 @@ import {
 
 export default function Header() {
 
+  const navigate =
+    useNavigate();
+
   const {
     unread,
     alerts,
-  } = useNotifications();
+  } =
+    useNotifications();
 
   const [
     showNotifications,
     setShowNotifications,
-  ] = useState(false);
+  ] =
+    useState(false);
 
   const hour =
     new Date().getHours();
@@ -50,26 +59,21 @@ export default function Header() {
   return (
 
     <motion.div
-
       initial={{
         opacity: 0,
         y: -20,
       }}
-
       animate={{
         opacity: 1,
         y: 0,
       }}
-
       transition={{
         duration: 0.45,
       }}
-
       className="mb-10 relative"
-
     >
 
-      {/* Top */}
+      {/* Header */}
 
       <div className="flex justify-between items-start">
 
@@ -91,18 +95,16 @@ export default function Header() {
 
         {/* Right Side */}
 
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-5">
 
           {/* Notification */}
 
           <button
-
             onClick={() =>
               setShowNotifications(
                 !showNotifications
               )
             }
-
             className="
               glass
               w-14
@@ -115,7 +117,6 @@ export default function Header() {
               hover:scale-105
               transition
             "
-
           >
 
             <Bell />
@@ -148,6 +149,31 @@ export default function Header() {
 
           </button>
 
+          {/* Settings */}
+
+          <button
+            onClick={() =>
+              navigate(
+                "/settings"
+              )
+            }
+            className="
+              glass
+              w-14
+              h-14
+              rounded-2xl
+              flex
+              items-center
+              justify-center
+              hover:scale-105
+              transition
+            "
+          >
+
+            <Settings />
+
+          </button>
+
           {/* Date */}
 
           <div
@@ -164,7 +190,9 @@ export default function Header() {
             "
           >
 
-            <CalendarDays size={18} />
+            <CalendarDays
+              size={18}
+            />
 
             <span className="text-sm font-medium">
 
@@ -176,7 +204,14 @@ export default function Header() {
 
           {/* Profile */}
 
-          <div className="relative">
+          <button
+            onClick={() =>
+              navigate(
+                "/profile"
+              )
+            }
+            className="relative"
+          >
 
             <img
               src="https://ui-avatars.com/api/?name=Abdul+Basith&background=22C55E&color=fff"
@@ -186,6 +221,8 @@ export default function Header() {
                 rounded-2xl
                 border-2
                 border-green-500
+                hover:scale-105
+                transition
               "
             />
 
@@ -203,7 +240,7 @@ export default function Header() {
               "
             />
 
-          </div>
+          </button>
 
         </div>
 

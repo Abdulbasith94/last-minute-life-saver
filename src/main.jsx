@@ -1,47 +1,78 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter }
+from "react-router-dom";
 
 import App from "./App";
 
 import "./index.css";
 
-import { TaskProvider } from "./context/TaskContext";
-import { AIProvider } from "./context/AIContext";
-import { ChatProvider } from "./context/ChatContext";
-import { NotificationProvider } from "./context/NotificationContext";
-import { AnalyticsProvider } from "./context/AnalyticsContext";
+import {
+  TaskProvider,
+}
+from "./context/TaskContext";
+
+import {
+  AIProvider,
+}
+from "./context/AIContext";
+
+import {
+  ChatProvider,
+}
+from "./context/ChatContext";
+
+import {
+  NotificationProvider,
+}
+from "./context/NotificationContext";
+
+import {
+  AnalyticsProvider,
+}
+from "./context/AnalyticsContext";
+
+import {
+  AuthProvider,
+}
+from "./context/AuthContext";
 
 ReactDOM.createRoot(
-  document.getElementById("root")
+  document.getElementById(
+    "root"
+  )
 ).render(
 
   <React.StrictMode>
 
     <BrowserRouter>
 
-      <TaskProvider>
+      <AuthProvider>
 
-        <AIProvider>
+        <TaskProvider>
 
-          <NotificationProvider>
+          <AIProvider>
 
-            <AnalyticsProvider>
+            <NotificationProvider>
 
-              <ChatProvider>
+              <AnalyticsProvider>
 
-                <App />
+                <ChatProvider>
 
-              </ChatProvider>
+                  <App />
 
-            </AnalyticsProvider>
+                </ChatProvider>
 
-          </NotificationProvider>
+              </AnalyticsProvider>
 
-        </AIProvider>
+            </NotificationProvider>
 
-      </TaskProvider>
+          </AIProvider>
+
+        </TaskProvider>
+
+      </AuthProvider>
 
     </BrowserRouter>
 

@@ -1,55 +1,139 @@
-import { Routes, Route } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 
-import Dashboard from "./pages/Dashboard";
-import Tasks from "./pages/Tasks";
-import Analytics from "./pages/Analytics";
-import Chatbot from "./pages/Chatbot";
-import Profile from "./pages/Profile";
+import {
+  useAuth,
+} from "./context/AuthContext";
 
-function App() {
+import ProtectedRoute
+from "./components/auth/ProtectedRoute";
+
+import Dashboard
+from "./pages/Dashboard";
+
+import Tasks
+from "./pages/Tasks";
+
+import Analytics
+from "./pages/Analytics";
+
+import Chatbot
+from "./pages/Chatbot";
+
+import Profile
+from "./pages/Profile";
+
+import Login
+from "./pages/Login";
+
+import Register
+from "./pages/Register";
+
+import SettingsPage from "./pages/Settings";
+
+export default function App() {
+
+  const {
+    isAuthenticated,
+  } =
+    useAuth();
 
   return (
 
     <Routes>
 
-      <Route
+      {/* PUBLIC */}
 
+      <Route
+        path="/login"
+        element={<Login />}
+      />
+
+      <Route
+        path="/register"
+        element={<Register />}
+      />
+
+      {/* PROTECTED */}
+
+      <Route
         path="/"
+        element={
+          <ProtectedRoute>
 
-        element={<Dashboard/>}
+            <Dashboard />
 
+          </ProtectedRoute>
+        }
       />
 
       <Route
-
         path="/tasks"
+        element={
+          <ProtectedRoute>
 
-        element={<Tasks/>}
+            <Tasks />
 
+          </ProtectedRoute>
+        }
       />
 
       <Route
-
         path="/analytics"
+        element={
+          <ProtectedRoute>
 
-        element={<Analytics/>}
+            <Analytics />
 
+          </ProtectedRoute>
+        }
       />
 
       <Route
+        path="/ai"
+        element={
+          <ProtectedRoute>
 
-        path="/chatbot"
+            <Chatbot />
 
-        element={<Chatbot/>}
-
+          </ProtectedRoute>
+        }
       />
 
       <Route
-
         path="/profile"
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        }
+      />
 
-        element={<Profile/>}
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute>
+            <SettingsPage />
+          </ProtectedRoute>
+        }
+      />
 
+      {/* FALLBACK */}
+
+      <Route
+        path="*"
+        element={
+          <Navigate
+            to={
+              isAuthenticated
+                ? "/"
+                : "/login"
+            }
+          />
+        }
       />
 
     </Routes>
@@ -57,5 +141,3 @@ function App() {
   );
 
 }
-
-export default App;
